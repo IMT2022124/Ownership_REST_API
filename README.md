@@ -37,7 +37,7 @@ source env/bin/activate  # On Windows: env\Scripts\activate
 
 ---
 
-### 2. Install Django and Django REST Framework
+### 3. Install Django and Django REST Framework
 
 ```bash
 pip install django djangorestframework
@@ -45,7 +45,7 @@ pip install django djangorestframework
 
 ---
 
-### 3. Run Migrations and Create a Superuser
+### 4. Run Migrations and Create a Superuser
 
 ```bash
 python manage.py makemigrations
@@ -55,7 +55,7 @@ python manage.py createsuperuser
 
 ---
 
-### 4. Start the Server
+### 5. Start the Server
 
 ```bash
 python manage.py runserver
@@ -100,3 +100,65 @@ python manage.py runserver
 
 Used [Postman](https://www.postman.com/) to test all API endpoints.
 
+---
+
+## 📸 Screenshots & Demonstration
+
+The following screenshots illustrate a complete usage flow of the File Ownership Transfer API (using a single file, testfile.pdf, and 2 users, Alice and Bob):
+
+---
+
+### 1. File Uploaded by Alice
+
+Alice uploads a file using the `/api/upload/` endpoint.
+
+![Upload Screenshot](screenshots/Postman1.png)
+> The file (with id 1) is now owned by Alice (whose user id is 2) and she is set as the original owner of the file and the file appears in the admin panel under the `File` model.
+
+---
+
+### 2. File Transferred to Bob
+
+Alice transfers the file to Bob using the `/api/transfer/` endpoint.
+
+![Transfer Screenshot](screenshots/Postman2.png)
+> The file ownership has been successfully changed to Bob (whose user id is 3), and a transfer entry is logged.
+
+---
+
+### 3. File Revoked by Alice
+
+Alice revokes the file transfer, reclaiming ownership from Bob using `/api/revoke/`.
+
+![Revoke Screenshot](screenshots/Postman3.png)
+> Ownership is reverted to Alice (since she was the original owner of the file), and another entry is added in the transfer history.
+
+---
+
+### 4. Bob Tries to Revoke File Owned by Alice
+
+Bob tries to revoke file owned by Alice using `/api/revoke/` but since Alice is the original owner of the file, he is unable to do so.
+
+![Revoke Screenshot](screenshots/Postman4.png)
+> Error displayed since Bob is not the original owner of the file.
+
+---
+
+### 5. Admin Panel - File Model
+
+Admin view showing the file record with updated `owner` and `original_owner`.
+
+![Admin File Model](screenshots/DB1.png)
+> This reflects the current state of ownership after the revoke.
+
+---
+
+### 6. Admin Panel - Transfer History Model
+
+Shows the full history of actions: transfer to Bob and revoke by Alice.
+
+![Admin History Model](screenshots/DB2.png)
+> Both actions are timestamped and indicate the `from_user`, `to_user`, and action type.
+
+---
+The first 4 images are screenshots of Postman while testing the API and the last 2 images are screenshots of the database state (in the `admin` panel of Django) after the Postman testing.
